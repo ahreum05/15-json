@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<link rel="stylesheet" type="text/css" href="css/reset.css">
+<link rel="stylesheet" type="text/css" href="css/common.css">
+<script type="text/javascript" src="js/jquery-3.7.1.js"></script>
+<script type="text/javascript">
+	function itemTemplate(no, subject, hit, date) {
+		// 태그 생성
+		var tr = $("<tr>");
+		var td1 = $("<td>").html(no);
+		var td2 = $("<td>").html(subject);
+		var td3 = $("<td>").html(hit);
+		var td4 = $("<td>").html(date);
+		// 조립
+		tr.append(td1).append(td2).append(td3).append(td4);
+		// tbody에 삽입
+		$("#result > table > tbody").append(tr);
+	}
+	
+	$(function(){
+		$.ajax({
+			url: "ajax/json/bbs.json",
+            type: "get",
+            dataType: "json",
+            cache: false,
+            timeout: 10000,
+            success: function(json){
+            	var title = json.title;
+                var description = json.description;
+                var total = json.total;
+                var items = json.item;
+
+             	// 내용 추가된 태그 생성
+                var h1 = $("<h1>").addClass("title").text(title);
+                var p1 = $("<p>").addClass("description").text(description);
+                
+             	// 기존 태그에 생성된 태그 추가
+                $("#title").empty().append(h1);
+                $("#description").empty().append(p1);
+                $("#total").empty().append(total);
+
+             	// 목록 출력
+             	for(var i=0; i<items.length; i++) {
+             		itemTemplate(items[i].no, items[i].subject, 
+             					 items[i].hit, items[i].date);
+             	} 
+            },
+            error: function(xhr, textStatus, errorThrown) {
+                $("#result").html("[ERROR] " + xhr.status);
+            }
+		});
+	});
+</script>
+
+<style type="text/css">
+table {
+	width: 700px;
+	font-size: 14px;
+	text-align: center;
+	margin: auto;
+}
+table thead {
+	border-bottom: 2px solid #285e8e;
+	font-weight: bold;
+}
+table tbody tr {
+	border-bottom: 1px dotted #ccc;
+}
+table .no {
+	width: 10%;
+}
+table .subject {
+	width: 60%;
+}
+table .hit {
+	width: 10%;
+}
+table .date {
+	width: 20%;
+}
+td, th {
+	padding: 10px 0;
+}
+</style>
+
+</head>
+<body>
+	<div id="title"></div>
+    <div class="exec" id="description"></div>
+    <div class="exec">총 게시물 수 : <span id="total"></span></div>
+    <div class="exec" id="result">
+    	<table>
+    		<thead>
+    			<tr>
+    				<th class="no">번호</th>
+    				<th class="subject">제목</th>
+    				<th class="hit">조회수</th>
+    				<th class="date">작성일시</th>
+    			</tr>
+    		</thead>
+    		<tbody>  <!-- 목록 출력 -->
+    		
+    		</tbody>
+    	</table>
+    </div> 	
+</body>
+</html>
